@@ -3,13 +3,24 @@ services:
     image: jenkins/jenkins:lts
     container_name: jenkins
     restart: on-failure
+    user: root
+    group_add:
+      - ${DOCKER_GID}
     ports:
-      - 8080:8080
-      - 5000:5000
+      - 8080
+      - 5000
     environment:
       - JENKINS_OPTS="--prefix=/jenkins"
+      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
       - jenkins_data:/var/jenkins/home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - gateway-network
 
 volumes:
   jenkins_data:
+
+networks:
+  gateway-network:
+    external: true
